@@ -3,16 +3,18 @@ package worker
 import (
 	"database/sql"
 	"os"
+
+	"github.com/pkg/errors"
 )
 
-// OpenFileFoodDic open raw file food_dictionary.txt
-func OpenFileFoodDic(name string) (*os.File, error) {
+// OpenFile open raw file
+func OpenFile(name string) (*os.File, error) {
+	f, err := os.Open(name)
+	if err != nil {
+		return nil, errors.Wrap(err, "can not open file")
+	}
 
-}
-
-// OpenFileReview open raw file test_file.csv
-func OpenFileReview(name string) (*os.File, error) {
-
+	return f, nil
 }
 
 // MigrateReview migrate schema table `review`
