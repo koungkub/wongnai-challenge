@@ -1,0 +1,35 @@
+name: test and build
+on:
+  push: 
+    branches:
+      - master
+      - dev
+  pull_request:
+    branches:
+      - dev
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Install Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: 1.14.x
+    - name: Checkout code
+      uses: actions/checkout@v2
+    - name: Run testing
+      run: |   
+        go test -v -cover ./...
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Install Go
+      uses: actions/setup-go@v2
+      with:
+          go-version: 1.14.x
+    - name: Checkout code
+      uses: actions/checkout@v2
+    - name: Build
+      run: |
+        go build cmd/wongnai/main.go
+          
