@@ -27,7 +27,7 @@ func OpenFile(name string) (*os.File, error) {
 }
 
 // MigrateReview migrate schema table `review`
-func MigrateReview(db *sql.DB, f *os.File) error {
+func MigrateReview(db *sql.DB, f io.Reader) error {
 	stmt, err := db.PrepareContext(context.TODO(), sqlMigrateReviewTable)
 	if err != nil {
 		return errors.Wrap(err, "prepare statement")
@@ -54,7 +54,7 @@ func MigrateReview(db *sql.DB, f *os.File) error {
 }
 
 // MigrateFoodDic migrate schema table `food_dictionary`
-func MigrateFoodDic(db *sql.DB, f *os.File) error {
+func MigrateFoodDic(db *sql.DB, f io.Reader) error {
 	stmt, err := db.PrepareContext(context.TODO(), sqlMigrateFoodDicTable)
 	if err != nil {
 		return errors.Wrap(err, "prepare statement")
