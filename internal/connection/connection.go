@@ -8,7 +8,7 @@ import (
 )
 
 // NewLog create loggin instance or connection to centralized logging server
-func NewLog(service string) {
+func NewLog(service string) *logrus.Entry {
 
 	log := logrus.New()
 
