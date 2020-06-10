@@ -3,13 +3,22 @@ package connection
 import (
 	"database/sql"
 
+	"github.com/go-redis/redis/v8"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 )
 
+// NewCache create cache(redis) connection
+func NewCache(host, pass string) *redis.Client {
+	return redis.NewClient(&redis.Options{
+		Addr:     host,
+		Password: pass,
+		DB:       0,
+	})
+}
+
 // NewLog create loggin instance or connection to centralized logging server
 func NewLog(service string) *logrus.Entry {
-
 	log := logrus.New()
 
 	log.SetLevel(logrus.DebugLevel)
