@@ -6,6 +6,7 @@ import (
 	"github.com/gofiber/requestid"
 	"github.com/gofiber/template/pug"
 	"github.com/koungkub/wongnai/internal/handler"
+	"github.com/koungkub/wongnai/internal/model"
 )
 
 func routing(app *fiber.App) {
@@ -15,12 +16,16 @@ func routing(app *fiber.App) {
 }
 
 // New get routing instance
-func New() *fiber.App {
+func New(conf *model.Conf) *fiber.App {
 	app := fiber.New()
 	app.Settings.Templates = pug.New("./public", ".pug")
 
 	app.Use(requestid.New())
 	app.Use(recover.New())
+	app.Use(func(c *fiber.Ctx) {
+		c.Locals("conf", conf)
+		c.Next()
+	})
 
 	routing(app)
 
