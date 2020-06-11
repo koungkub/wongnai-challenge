@@ -67,3 +67,57 @@ func (r *Review) SetReviewInCache(id string, review string, exp time.Duration) e
 
 	return nil
 }
+
+func (r *Review) SearchReviewByKeywordInDB(keyword string) ([]string, error) {
+	stmt, err := r.DB.PrepareContext(context.TODO(), sqlSearchReviewByKeyword)
+	if err != nil {
+		return nil, errors.Wrap(err, "prepare statement")
+	}
+	defer stmt.Close()
+
+	result, err := stmt.QueryContext(context.TODO(), keyword)
+	if err != nil {
+		return nil, errors.Wrap(err, "query")
+	}
+	defer result.Close()
+
+	var reviews []string
+	for result.Next() {
+		var review string
+		if err := result.Scan(&review); err != nil {
+			return nil, errors.Wrap(err, "scan")
+		}
+		reviews = append(reviews, review)
+	}
+
+	return reviews, nil
+}
+
+func (r *Review) SearchKeywordInCache(keyword string) (string, error) {
+	key := fmt.Sprintf(cacheKeywordKey, keyword)
+
+	v, err := r.Cache.Get(context.TODO(), key).Result()
+	if err != nil {
+		return "", errors.Wrap(err, "redis get")
+	}
+
+	return v, nil
+}
+
+func (r *Review) SearchKeywordInDB(keyword string) error {
+	stmt, err := r.DB.PrepareContext(context.TODO(), sqlCheckKeywordIsExist)
+	if err != nil {
+		return errors.Wrap(err, "prepare statement")
+	}
+	defer stmt.Close()
+
+	var result int
+	if err := stmt.QueryRowContext(context.TODO(), keyword).Scan(&result); err != nil {
+		return errors.Wrap(err, "query row")
+	}
+	if result == 0 {
+		return errors.New("keyword not exists")
+	}
+
+	return nil
+}
