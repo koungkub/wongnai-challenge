@@ -7,6 +7,8 @@ import (
 	"github.com/koungkub/wongnai/internal/model"
 	"github.com/koungkub/wongnai/internal/route"
 	"github.com/spf13/viper"
+
+	_ "github.com/go-sql-driver/mysql"
 )
 
 func init() {
