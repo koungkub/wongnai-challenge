@@ -11,9 +11,12 @@ import (
 )
 
 const (
-	sqlGetReviewByID = `SELECT comment FROM review WHERE review_id=?`
+	sqlGetReviewByID         = `SELECT comment FROM review WHERE review_id=?`
+	sqlCheckKeywordIsExist   = `SELECT 1 FROM food_dictionary WHERE name=?`
+	sqlSearchReviewByKeyword = `SELECT name FROM food_dictionary WHERE name LIKE '%?%'`
 
-	cacheReviewKey = `review:%v`
+	cacheReviewKey  = `review:%v`
+	cacheKeywordKey = `keyword:%v`
 )
 
 type Review struct {
@@ -28,7 +31,7 @@ func NewReview(db *sql.DB, cache *redis.Client) Reviewer {
 	}
 }
 
-func (r *Review) GetReviewByCache(id string) (string, error) {
+func (r *Review) GetReviewInCache(id string) (string, error) {
 	key := fmt.Sprintf(cacheReviewKey, id)
 
 	v, err := r.Cache.Get(context.TODO(), key).Result()
@@ -39,7 +42,7 @@ func (r *Review) GetReviewByCache(id string) (string, error) {
 	return v, nil
 }
 
-func (r *Review) GetReviewByDB(id string) (string, error) {
+func (r *Review) GetReviewInDB(id string) (string, error) {
 	stmt, err := r.DB.PrepareContext(context.TODO(), sqlGetReviewByID)
 	if err != nil {
 		return "", errors.Wrap(err, "prepare statement")

@@ -15,20 +15,20 @@ func GetReviewByID() func(c *fiber.Ctx) {
 		conf := c.Locals("conf").(*model.Conf)
 		r := worker.NewReview(conf.DB, conf.Cache)
 
-		review, err := r.GetReviewByCache(id)
+		review, err := r.GetReviewInCache(id)
 		if err != nil {
-			review, err = r.GetReviewByDB(id)
+			review, err = r.GetReviewInDB(id)
 			if err != nil || len(review) == 0 {
-				c.Status(fiber.StatusUnprocessableEntity).JSON(fiber.Map{
-					"message": "id not match any reviews",
+				c.Status(fiber.StatusUnprocessableEntity).Render("review", fiber.Map{
+					"Content": "can not find review",
 				})
 				return
 			}
 			r.SetReviewInCache(id, review, time.Hour)
 		}
 
-		c.Status(fiber.StatusOK).JSON(fiber.Map{
-			"data": review,
+		c.Status(fiber.StatusOK).Render("review", fiber.Map{
+			"Content": review,
 		})
 	}
 }
@@ -36,7 +36,6 @@ func GetReviewByID() func(c *fiber.Ctx) {
 // SearchReviewByQuery handler get review by specific review_keyword
 func SearchReviewByQuery() func(c *fiber.Ctx) {
 	return func(c *fiber.Ctx) {
-
 	}
 }
 
