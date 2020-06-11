@@ -20,7 +20,7 @@ func GetReviewByID() func(c *fiber.Ctx) {
 			review, err = r.GetReviewInDB(id)
 			if err != nil || len(review) == 0 {
 				c.Status(fiber.StatusUnprocessableEntity).Render("review", fiber.Map{
-					"Content": "can not find review",
+					"Content": "review not found",
 				})
 				return
 			}
