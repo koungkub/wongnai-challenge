@@ -30,7 +30,7 @@ func main() {
 	driver, dsn := viper.GetString("APP.DB.DRIVER"), viper.GetString("APP.DB.DSN")
 	db, err := connection.NewDB(driver, dsn)
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 
 	f, err := worker.OpenFile(*food)
