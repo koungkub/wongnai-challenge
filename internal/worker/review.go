@@ -20,11 +20,13 @@ const (
 	cacheKeywordKey = `keyword:%v`
 )
 
+// Review worker for review logic
 type Review struct {
 	DB    *sql.DB
 	Cache *redis.Client
 }
 
+// NewReview get review instance
 func NewReview(db *sql.DB, cache *redis.Client) Reviewer {
 	return &Review{
 		DB:    db,
@@ -32,6 +34,7 @@ func NewReview(db *sql.DB, cache *redis.Client) Reviewer {
 	}
 }
 
+// GetReviewInCache get review by id in cache
 func (r *Review) GetReviewInCache(id string) (string, error) {
 	key := fmt.Sprintf(cacheReviewKey, id)
 
@@ -43,6 +46,7 @@ func (r *Review) GetReviewInCache(id string) (string, error) {
 	return v, nil
 }
 
+// GetReviewInDB get review by id in database
 func (r *Review) GetReviewInDB(id string) (string, error) {
 	stmt, err := r.DB.PrepareContext(context.TODO(), sqlGetReviewByID)
 	if err != nil {
@@ -58,6 +62,7 @@ func (r *Review) GetReviewInDB(id string) (string, error) {
 	return review, nil
 }
 
+// SetReviewInCache set review by id in cache
 func (r *Review) SetReviewInCache(id string, review string, exp time.Duration) error {
 	key := fmt.Sprintf(cacheReviewKey, id)
 
@@ -69,6 +74,7 @@ func (r *Review) SetReviewInCache(id string, review string, exp time.Duration) e
 	return nil
 }
 
+// SearchReviewByKeywordInDB search review by keyword in database
 func (r *Review) SearchReviewByKeywordInDB(keyword string) ([]string, error) {
 	stmt, err := r.DB.PrepareContext(context.TODO(), sqlSearchReviewByKeyword)
 	if err != nil {
@@ -95,6 +101,7 @@ func (r *Review) SearchReviewByKeywordInDB(keyword string) ([]string, error) {
 	return reviews, nil
 }
 
+// SearchKeywordInCache search keyword in cache
 func (r *Review) SearchKeywordInCache(keyword string) (string, error) {
 	key := fmt.Sprintf(cacheKeywordKey, keyword)
 
@@ -106,6 +113,7 @@ func (r *Review) SearchKeywordInCache(keyword string) (string, error) {
 	return v, nil
 }
 
+// SearchKeywordInDB search keyword in database
 func (r *Review) SearchKeywordInDB(keyword string) error {
 	stmt, err := r.DB.PrepareContext(context.TODO(), sqlCheckKeywordIsExist)
 	if err != nil {
@@ -124,6 +132,7 @@ func (r *Review) SearchKeywordInDB(keyword string) error {
 	return nil
 }
 
+// SetKeywordInCache set keyword in cache
 func (r *Review) SetKeywordInCache(keyword string, review string, exp time.Duration) error {
 	key := fmt.Sprintf(cacheKeywordKey, keyword)
 
@@ -135,6 +144,7 @@ func (r *Review) SetKeywordInCache(keyword string, review string, exp time.Durat
 	return nil
 }
 
+// EditReviewInDB edit review by id in database
 func (r *Review) EditReviewInDB(id, review string) (int64, error) {
 	stmt, err := r.DB.PrepareContext(context.TODO(), sqlEditReviewByID)
 	if err != nil {
@@ -155,6 +165,7 @@ func (r *Review) EditReviewInDB(id, review string) (int64, error) {
 	return rows, nil
 }
 
+// DelReviewKey delete key in cache
 func (r *Review) DelReviewKey(id string) error {
 	key := fmt.Sprintf(cacheReviewKey, id)
 

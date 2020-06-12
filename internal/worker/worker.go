@@ -2,6 +2,7 @@ package worker
 
 import "time"
 
+// Reviewer interface for review worker
 type Reviewer interface {
 	GetReviewInCache(id string) (string, error)
 	GetReviewInDB(id string) (string, error)
