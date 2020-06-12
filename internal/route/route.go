@@ -10,6 +10,7 @@ import (
 )
 
 func routing(app *fiber.App) {
+	app.Get("/", func(c *fiber.Ctx) { c.SendString("hello, world!") })
 	app.Get("/reviews/:id", handler.GetReviewByID())
 	app.Get("/reviews", handler.SearchReviewByQuery())
 	app.Put("/reviews/:id", handler.EditReview())
