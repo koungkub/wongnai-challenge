@@ -37,5 +37,5 @@ func main() {
 	r := route.New(conf)
 
 	port := viper.GetString("WONGNAI.PORT")
-	r.Listen(port)
+	log.Fatal(r.Listen(port))
 }
