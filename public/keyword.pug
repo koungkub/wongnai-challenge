@@ -1,0 +1,18 @@
+extends public/layout.pug
+
+block title
+    title Keyword
+
+block content
+    div {{ .Content }}
+
+    ol(id="review")
+        each Review in .Reviews
+            li {{ . }}
+
+block js
+    script.
+        const keyword = {{ .Keyword }}
+        const text = document.getElementById("review").innerHTML
+        const textReplace = text.split(keyword).join('<mark>' + keyword + '</mark>')
+        document.getElementById("review").innerHTML = textReplace
