@@ -12,8 +12,6 @@ type Reviewer interface {
 	SetKeywordInCache(keyword string, review string, exp time.Duration) error
 
 	SearchReviewByKeywordInDB(keyword string) ([]string, error)
-	SearchReviewByKeywordInCache(keyword string) ([]string, error)
-	SetReviewKeywordInCache(keyword string, reviews []string) error
 
 	EditReviewInDB(id, review string) (int64, error)
 }

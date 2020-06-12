@@ -16,9 +16,8 @@ const (
 	sqlSearchReviewByKeyword = `SELECT comment FROM review WHERE comment LIKE ?`
 	sqlEditReviewByID        = `UPDATE review SET comment=? WHERE review_id=?`
 
-	cacheReviewKey        = `review:%v`
-	cacheKeywordKey       = `keyword:%v`
-	cacheReviewKeywordKey = `review:keyword:%v`
+	cacheReviewKey  = `review:%v`
+	cacheKeywordKey = `keyword:%v`
 )
 
 type Review struct {
@@ -131,28 +130,6 @@ func (r *Review) SetKeywordInCache(keyword string, review string, exp time.Durat
 	err := r.Cache.Set(context.TODO(), key, review, exp).Err()
 	if err != nil {
 		return errors.Wrap(err, "redis set")
-	}
-
-	return nil
-}
-
-func (r *Review) SearchReviewByKeywordInCache(keyword string) ([]string, error) {
-	key := fmt.Sprintf(cacheReviewKeywordKey, keyword)
-
-	reviews, err := r.Cache.LRange(context.TODO(), key, 0, -1).Result()
-	if err != nil {
-		return nil, errors.Wrap(err, "redis lrange")
-	}
-
-	return reviews, nil
-}
-
-func (r *Review) SetReviewKeywordInCache(keyword string, reviews []string) error {
-	key := fmt.Sprintf(cacheReviewKeywordKey, keyword)
-
-	err := r.Cache.RPush(context.TODO(), key, reviews).Err()
-	if err != nil {
-		return errors.Wrap(err, "redis rpush")
 	}
 
 	return nil

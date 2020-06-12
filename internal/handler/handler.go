@@ -54,16 +54,12 @@ func SearchReviewByQuery() func(c *fiber.Ctx) {
 			r.SetKeywordInCache(keyword, "1", cacheTimeout)
 		}
 
-		review, err := r.SearchReviewByKeywordInCache(keyword)
-		if err != nil || len(review) == 0 {
-			review, err = r.SearchReviewByKeywordInDB(keyword)
-			if err != nil {
-				c.Status(fiber.StatusUnprocessableEntity).Render("keyword", fiber.Map{
-					"Content": "review not found",
-				})
-				return
-			}
-			r.SetReviewKeywordInCache(keyword, review)
+		review, err := r.SearchReviewByKeywordInDB(keyword)
+		if err != nil {
+			c.Status(fiber.StatusUnprocessableEntity).Render("keyword", fiber.Map{
+				"Content": "review not found",
+			})
+			return
 		}
 
 		c.Status(fiber.StatusOK).Render("keyword", fiber.Map{
@@ -93,6 +89,7 @@ func EditReview() func(c *fiber.Ctx) {
 			})
 			return
 		}
+		// purge review_id
 
 		c.Status(fiber.StatusOK).Render("edit", fiber.Map{
 			"Content": "review updated",
