@@ -14,6 +14,7 @@ const (
 	sqlGetReviewByID         = `SELECT comment FROM review WHERE review_id=?`
 	sqlCheckKeywordIsExist   = `SELECT 1 FROM food_dictionary WHERE name=?`
 	sqlSearchReviewByKeyword = `SELECT comment FROM review WHERE comment LIKE ?`
+	sqlEditReviewByID        = `UPDATE review SET comment=? WHERE review_id=?`
 
 	cacheReviewKey        = `review:%v`
 	cacheKeywordKey       = `keyword:%v`
@@ -155,4 +156,24 @@ func (r *Review) SetReviewKeywordInCache(keyword string, reviews []string) error
 	}
 
 	return nil
+}
+
+func (r *Review) EditReviewInDB(id, review string) (int64, error) {
+	stmt, err := r.DB.PrepareContext(context.TODO(), sqlEditReviewByID)
+	if err != nil {
+		return 0, errors.Wrap(err, "prepare statement")
+	}
+	defer stmt.Close()
+
+	result, err := stmt.ExecContext(context.TODO(), review, id)
+	if err != nil {
+		return 0, errors.Wrap(err, "exec")
+	}
+
+	rows, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "rows affected")
+	}
+
+	return rows, nil
 }
