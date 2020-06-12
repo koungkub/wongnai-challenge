@@ -14,4 +14,5 @@ type Reviewer interface {
 	SearchReviewByKeywordInDB(keyword string) ([]string, error)
 
 	EditReviewInDB(id, review string) (int64, error)
+	DelReviewKey(id string) error
 }

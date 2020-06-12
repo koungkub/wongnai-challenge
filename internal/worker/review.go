@@ -154,3 +154,14 @@ func (r *Review) EditReviewInDB(id, review string) (int64, error) {
 
 	return rows, nil
 }
+
+func (r *Review) DelReviewKey(id string) error {
+	key := fmt.Sprintf(cacheReviewKey, id)
+
+	err := r.Cache.Del(context.TODO(), key).Err()
+	if err != nil {
+		return errors.Wrap(err, "redis del")
+	}
+
+	return nil
+}

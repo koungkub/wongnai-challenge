@@ -89,7 +89,13 @@ func EditReview() func(c *fiber.Ctx) {
 			})
 			return
 		}
-		// purge review_id
+
+		if err := r.DelReviewKey(id); err != nil {
+			c.Status(fiber.StatusInternalServerError).Render("edit", fiber.Map{
+				"Content": "server error",
+			})
+			return
+		}
 
 		c.Status(fiber.StatusOK).Render("edit", fiber.Map{
 			"Content": "review updated",
