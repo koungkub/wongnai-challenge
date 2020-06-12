@@ -13,10 +13,11 @@ import (
 const (
 	sqlGetReviewByID         = `SELECT comment FROM review WHERE review_id=?`
 	sqlCheckKeywordIsExist   = `SELECT 1 FROM food_dictionary WHERE name=?`
-	sqlSearchReviewByKeyword = `SELECT name FROM food_dictionary WHERE name LIKE '%?%'`
+	sqlSearchReviewByKeyword = `SELECT comment FROM review WHERE comment LIKE ?`
 
-	cacheReviewKey  = `review:%v`
-	cacheKeywordKey = `keyword:%v`
+	cacheReviewKey        = `review:%v`
+	cacheKeywordKey       = `keyword:%v`
+	cacheReviewKeywordKey = `review:keyword:%v`
 )
 
 type Review struct {
@@ -75,16 +76,17 @@ func (r *Review) SearchReviewByKeywordInDB(keyword string) ([]string, error) {
 	}
 	defer stmt.Close()
 
-	result, err := stmt.QueryContext(context.TODO(), keyword)
+	queryArgs := fmt.Sprintf("%%%v%%", keyword)
+	rows, err := stmt.QueryContext(context.TODO(), queryArgs)
 	if err != nil {
 		return nil, errors.Wrap(err, "query")
 	}
-	defer result.Close()
+	defer rows.Close()
 
 	var reviews []string
-	for result.Next() {
+	for rows.Next() {
 		var review string
-		if err := result.Scan(&review); err != nil {
+		if err := rows.Scan(&review); err != nil {
 			return nil, errors.Wrap(err, "scan")
 		}
 		reviews = append(reviews, review)
@@ -117,6 +119,39 @@ func (r *Review) SearchKeywordInDB(keyword string) error {
 	}
 	if result == 0 {
 		return errors.New("keyword not exists")
+	}
+
+	return nil
+}
+
+func (r *Review) SetKeywordInCache(keyword string, review string, exp time.Duration) error {
+	key := fmt.Sprintf(cacheKeywordKey, keyword)
+
+	err := r.Cache.Set(context.TODO(), key, review, exp).Err()
+	if err != nil {
+		return errors.Wrap(err, "redis set")
+	}
+
+	return nil
+}
+
+func (r *Review) SearchReviewByKeywordInCache(keyword string) ([]string, error) {
+	key := fmt.Sprintf(cacheReviewKeywordKey, keyword)
+
+	reviews, err := r.Cache.LRange(context.TODO(), key, 0, -1).Result()
+	if err != nil {
+		return nil, errors.Wrap(err, "redis lrange")
+	}
+
+	return reviews, nil
+}
+
+func (r *Review) SetReviewKeywordInCache(keyword string, reviews []string) error {
+	key := fmt.Sprintf(cacheReviewKeywordKey, keyword)
+
+	err := r.Cache.RPush(context.TODO(), key, reviews).Err()
+	if err != nil {
+		return errors.Wrap(err, "redis rpush")
 	}
 
 	return nil

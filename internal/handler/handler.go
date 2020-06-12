@@ -8,6 +8,10 @@ import (
 	"github.com/koungkub/wongnai/internal/worker"
 )
 
+var (
+	cacheTimeout = time.Hour
+)
+
 // GetReviewByID handler get review by specific review_id
 func GetReviewByID() func(c *fiber.Ctx) {
 	return func(c *fiber.Ctx) {
@@ -24,7 +28,7 @@ func GetReviewByID() func(c *fiber.Ctx) {
 				})
 				return
 			}
-			r.SetReviewInCache(id, review, time.Hour)
+			r.SetReviewInCache(id, review, cacheTimeout)
 		}
 
 		c.Status(fiber.StatusOK).Render("review", fiber.Map{
@@ -36,6 +40,36 @@ func GetReviewByID() func(c *fiber.Ctx) {
 // SearchReviewByQuery handler get review by specific review_keyword
 func SearchReviewByQuery() func(c *fiber.Ctx) {
 	return func(c *fiber.Ctx) {
+		keyword := c.Query("query")
+		conf := c.Locals("conf").(*model.Conf)
+		r := worker.NewReview(conf.DB, conf.Cache)
+
+		if _, err := r.SearchKeywordInCache(keyword); err != nil {
+			if err := r.SearchKeywordInDB(keyword); err != nil {
+				c.Status(fiber.StatusUnprocessableEntity).Render("keyword", fiber.Map{
+					"Content": "keyword not found",
+				})
+				return
+			}
+			r.SetKeywordInCache(keyword, "1", cacheTimeout)
+		}
+
+		review, err := r.SearchReviewByKeywordInCache(keyword)
+		if err != nil || len(review) == 0 {
+			review, err = r.SearchReviewByKeywordInDB(keyword)
+			if err != nil {
+				c.Status(fiber.StatusUnprocessableEntity).Render("keyword", fiber.Map{
+					"Content": "review not found",
+				})
+				return
+			}
+			r.SetReviewKeywordInCache(keyword, review)
+		}
+
+		c.Status(fiber.StatusOK).Render("keyword", fiber.Map{
+			"Reviews": review,
+			"Keyword": keyword,
+		})
 	}
 }
 
