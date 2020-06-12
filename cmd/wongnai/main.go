@@ -34,7 +34,6 @@ func main() {
 	}
 
 	conf := model.NewConf(db, log, cache)
-
 	r := route.New(conf)
 
 	port := viper.GetString("WONGNAI.PORT")
