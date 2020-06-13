@@ -1,12 +1,11 @@
-package worker
+package service
 
 import (
 	"context"
 	"time"
 )
 
-// Reviewer interface for review worker
-type Reviewer interface {
+type Servicer interface {
 	GetReviewInCache(ctx context.Context, id string) (string, error)
 	GetReviewInDB(ctx context.Context, id string) (string, error)
 	SetReviewInCache(ctx context.Context, id string, review string, exp time.Duration) error
