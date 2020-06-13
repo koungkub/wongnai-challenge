@@ -19,7 +19,7 @@ func routing(app *fiber.App) {
 // New get routing instance
 func New(conf *model.Conf) *fiber.App {
 	app := fiber.New()
-	app.Settings.Templates = pug.New("./public", ".pug")
+	app.Settings.Views = pug.New("./public", ".pug")
 
 	app.Use(requestid.New())
 	app.Use(recover.New())
