@@ -5,6 +5,7 @@ import (
 	"time"
 )
 
+// Servicer interface for Preview
 type Servicer interface {
 	GetReviewInCache(ctx context.Context, id string) (string, error)
 	GetReviewInDB(ctx context.Context, id string) (string, error)

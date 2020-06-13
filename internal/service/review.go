@@ -7,10 +7,12 @@ import (
 	"github.com/koungkub/wongnai/internal/worker"
 )
 
+// Preview struct for encapsulate package worker
 type Preview struct {
 	Worker worker.Reviewer
 }
 
+// NewPreview create instance Preview
 func NewPreview(w worker.Reviewer) Servicer {
 	return &Preview{
 		Worker: w,
