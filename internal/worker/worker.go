@@ -1,19 +1,22 @@
 package worker
 
-import "time"
+import (
+	"context"
+	"time"
+)
 
 // Reviewer interface for review worker
 type Reviewer interface {
-	GetReviewInCache(id string) (string, error)
-	GetReviewInDB(id string) (string, error)
-	SetReviewInCache(id string, review string, exp time.Duration) error
+	GetReviewInCache(ctx context.Context, id string) (string, error)
+	GetReviewInDB(ctx context.Context, id string) (string, error)
+	SetReviewInCache(ctx context.Context, id string, review string, exp time.Duration) error
 
-	SearchKeywordInCache(keyword string) (string, error)
-	SearchKeywordInDB(keyword string) error
-	SetKeywordInCache(keyword string, review string, exp time.Duration) error
+	SearchKeywordInCache(ctx context.Context, keyword string) (string, error)
+	SearchKeywordInDB(ctx context.Context, keyword string) error
+	SetKeywordInCache(ctx context.Context, keyword string, review string, exp time.Duration) error
 
-	SearchReviewByKeywordInDB(keyword string) ([]string, error)
+	SearchReviewByKeywordInDB(ctx context.Context, keyword string) ([]string, error)
 
-	EditReviewInDB(id, review string) (int64, error)
-	DelReviewKey(id string) error
+	EditReviewInDB(ctx context.Context, id, review string) (int64, error)
+	DelReviewKey(ctx context.Context, id string) error
 }
