@@ -1,10 +1,12 @@
 package handler
 
 import (
+	"context"
 	"time"
 
 	"github.com/gofiber/fiber"
 	"github.com/koungkub/wongnai/internal/model"
+	"github.com/koungkub/wongnai/internal/service"
 	"github.com/koungkub/wongnai/internal/worker"
 )
 
@@ -15,20 +17,20 @@ var (
 // GetReviewByID handler get review by specific review_id
 func GetReviewByID() func(c *fiber.Ctx) {
 	return func(c *fiber.Ctx) {
-		id := c.Params("id")
-		conf := c.Locals("conf").(*model.Conf)
-		r := worker.NewReview(conf.DB, conf.Cache)
+		id, conf := c.Params("id"), c.Locals("conf").(*model.Conf)
+		w := worker.NewReview(conf.DB, conf.Cache)
+		svc := service.NewPreview(w)
 
-		review, err := r.GetReviewInCache(id)
+		review, err := svc.GetReviewInCache(context.TODO(), id)
 		if err != nil {
-			review, err = r.GetReviewInDB(id)
+			review, err = svc.GetReviewInDB(context.TODO(), id)
 			if err != nil || len(review) == 0 {
 				c.Status(fiber.StatusUnprocessableEntity).Render("review", fiber.Map{
 					"Content": "review not found",
 				})
 				return
 			}
-			r.SetReviewInCache(id, review, cacheTimeout)
+			svc.SetReviewInCache(context.TODO(), id, review, cacheTimeout)
 		}
 
 		c.Status(fiber.StatusOK).Render("review", fiber.Map{
@@ -40,21 +42,21 @@ func GetReviewByID() func(c *fiber.Ctx) {
 // SearchReviewByQuery handler get review by specific review_keyword
 func SearchReviewByQuery() func(c *fiber.Ctx) {
 	return func(c *fiber.Ctx) {
-		keyword := c.Query("query")
-		conf := c.Locals("conf").(*model.Conf)
-		r := worker.NewReview(conf.DB, conf.Cache)
+		keyword, conf := c.Query("query"), c.Locals("conf").(*model.Conf)
+		w := worker.NewReview(conf.DB, conf.Cache)
+		svc := service.NewPreview(w)
 
-		if _, err := r.SearchKeywordInCache(keyword); err != nil {
-			if err := r.SearchKeywordInDB(keyword); err != nil {
+		if _, err := svc.SearchKeywordInCache(context.TODO(), keyword); err != nil {
+			if err := svc.SearchKeywordInDB(context.TODO(), keyword); err != nil {
 				c.Status(fiber.StatusUnprocessableEntity).Render("keyword", fiber.Map{
 					"Content": "keyword not found",
 				})
 				return
 			}
-			r.SetKeywordInCache(keyword, "1", cacheTimeout)
+			svc.SetKeywordInCache(context.TODO(), keyword, "1", cacheTimeout)
 		}
 
-		review, err := r.SearchReviewByKeywordInDB(keyword)
+		review, err := svc.SearchReviewByKeywordInDB(context.TODO(), keyword)
 		if err != nil {
 			c.Status(fiber.StatusUnprocessableEntity).Render("keyword", fiber.Map{
 				"Content": "review not found",
@@ -72,9 +74,9 @@ func SearchReviewByQuery() func(c *fiber.Ctx) {
 // EditReview handler edit review by specific review_id
 func EditReview() func(c *fiber.Ctx) {
 	return func(c *fiber.Ctx) {
-		id, review := c.Params("id"), new(model.Review)
-		conf := c.Locals("conf").(*model.Conf)
-		r := worker.NewReview(conf.DB, conf.Cache)
+		id, review, conf := c.Params("id"), new(model.Review), c.Locals("conf").(*model.Conf)
+		w := worker.NewReview(conf.DB, conf.Cache)
+		svc := service.NewPreview(w)
 
 		if err := c.BodyParser(review); err != nil {
 			c.Status(fiber.StatusUnprocessableEntity).Render("edit", fiber.Map{
@@ -82,7 +84,7 @@ func EditReview() func(c *fiber.Ctx) {
 			})
 		}
 
-		rows, err := r.EditReviewInDB(id, review.Data.Comment)
+		rows, err := svc.EditReviewInDB(context.TODO(), id, review.Data.Comment)
 		if err != nil || rows <= 0 {
 			c.Status(fiber.StatusUnprocessableEntity).Render("edit", fiber.Map{
 				"Content": "review not change because review_id not found or comment have no difference",
@@ -90,7 +92,7 @@ func EditReview() func(c *fiber.Ctx) {
 			return
 		}
 
-		if err := r.DelReviewKey(id); err != nil {
+		if err := svc.DelReviewKey(context.TODO(), id); err != nil {
 			c.Status(fiber.StatusInternalServerError).Render("edit", fiber.Map{
 				"Content": "server error",
 			})
