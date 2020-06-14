@@ -4,8 +4,20 @@ This repository is build for [Carrers WeChallenge Program](https://careers.wongn
 
 ## Docs
 
-1. directory `docs/api_spec` collection of api specification
-2. directiry `docs/diagram` collection of diagram for explain how api worked !!
+### Diagram
+
+directiry `docs/diagram` collection of diagram for explain how api worked !!
+
+### API Specification
+
+run api specification using docker
+
+```sh
+cd docs/api_spec
+docker run -d --rm --name slate -p 4567:4567 -v $(pwd)/build:/srv/slate/build -v $(pwd)/source:/srv/slate/source slate
+```
+
+and open this browser [here](http://localhost:4567)
 
 ## Usage
 
