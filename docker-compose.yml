@@ -1,0 +1,48 @@
+version: '3.6'
+services: 
+  wongnai:
+    build:
+      context: .
+      dockerfile: build/Dockerfile.wongnai
+    container_name: wongnai
+    restart: always
+    depends_on:
+      - mysql
+      - redis
+    ports: 
+      - 5555:5555
+    networks: 
+      - wongnai.com
+
+  migrate:
+    build:
+      context: .
+      dockerfile: build/Dockerfile.migrate
+    depends_on:
+      - mysql
+    environment:
+      - HOST=mysql
+      - PORT=3306
+    networks: 
+      - wongnai.com
+
+  redis:
+    image: redis:6.0.4-alpine
+    container_name: redis
+    restart: always
+    networks: 
+      - wongnai.com
+
+  mysql:
+    image: mysql:5.7
+    container_name: mysql
+    restart: always
+    networks: 
+      - wongnai.com
+    env_file: 
+      - scripts/mariadb.env
+
+networks:
+  wongnai.com:
+    driver: bridge
+    name: wongnai.com

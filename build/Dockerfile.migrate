@@ -1,0 +1,17 @@
+FROM golang:1.14.3-alpine AS build
+ENV CGO_ENABLED=0 GOOS=linux GOPROXY=https://proxy.golang.org
+WORKDIR /golang
+RUN apk add --update --no-cache git
+COPY go.mod .
+COPY go.sum .
+RUN go mod download
+COPY . .
+RUN go build -a -tags netgo -ldflags '-w' -o app cmd/migrate/main.go
+
+FROM alpine:3.10
+WORKDIR /go
+COPY --from=build /golang/app .
+COPY config config
+COPY datasets datasets
+COPY scripts/wait-for wait-for
+ENTRYPOINT [ "./wait-for", "mysql:3306", "--", "./app" ]
