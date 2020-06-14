@@ -9,4 +9,12 @@ This repository is build for [Carrers WeChallenge Program](https://careers.wongn
 
 ## Usage
 
-`docker-compose -f docker-compose.yml up -d`
+```sh
+docker-compose -f docker-compose.yml up -d
+```
+
+## Testing
+
+```sh
+go test -v -cover ./...
+```
