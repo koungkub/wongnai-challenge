@@ -5,9 +5,9 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber"
-	"github.com/koungkub/wongnai/internal/model"
-	"github.com/koungkub/wongnai/internal/service"
-	"github.com/koungkub/wongnai/internal/worker"
+	"github.com/koungkub/wongnai-challenge/internal/model"
+	"github.com/koungkub/wongnai-challenge/internal/service"
+	"github.com/koungkub/wongnai-challenge/internal/worker"
 )
 
 var (
