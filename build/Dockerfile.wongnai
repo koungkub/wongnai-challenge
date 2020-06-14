@@ -1,0 +1,19 @@
+FROM golang:1.14.3-alpine AS build
+ENV CGO_ENABLED=0 GOOS=linux GOPROXY=https://proxy.golang.org
+WORKDIR /golang
+RUN apk add --update --no-cache git
+COPY go.mod .
+COPY go.sum .
+RUN go mod download
+COPY . .
+RUN go build -a -tags netgo -ldflags '-w' -o app cmd/wongnai/main.go
+
+FROM alpine:3.10
+ENV TZ=Asia/Bangkok
+WORKDIR /go
+EXPOSE 5555
+RUN apk add --update --no-cache tzdata ca-certificates
+COPY --from=build /golang/app .
+COPY config config
+COPY public public
+ENTRYPOINT [ "./app" ]
