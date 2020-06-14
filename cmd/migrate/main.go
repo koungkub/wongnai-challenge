@@ -43,6 +43,10 @@ func main() {
 		log.Fatal(err)
 	}
 
+	if err := worker.MigrateSchema(db); err != nil {
+		log.Fatal(err)
+	}
+
 	if err := worker.MigrateFoodDic(db, f); err != nil {
 		log.Fatal(err)
 	}

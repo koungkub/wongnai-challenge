@@ -14,6 +14,23 @@ import (
 const (
 	sqlMigrateReviewTable  = `INSERT INTO review (review_id, comment) VALUES (?, ?)`
 	sqlMigrateFoodDicTable = `INSERT INTO food_dictionary (name) VALUES (?)`
+
+	sqlCreateTableReview = `
+	CREATE TABLE IF NOT EXISTS review (
+		review_id INT(11),
+		comment TEXT NOT NULL,
+		created_at DATETIME DEFAULT current_timestamp(),
+		updated_at DATETIME DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+		PRIMARY KEY (review_id)
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;`
+	sqlCreateTableFoodDic = `
+	CREATE TABLE IF NOT EXISTS food_dictionary (
+		food_id INT(11) AUTO_INCREMENT,
+		name VARCHAR(255) NOT NULL,
+		created_at DATETIME DEFAULT current_timestamp(),
+		updated_at DATETIME DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+		PRIMARY KEY (food_id)
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;`
 )
 
 // OpenFile open raw file
@@ -24,6 +41,21 @@ func OpenFile(name string) (*os.File, error) {
 	}
 
 	return f, nil
+}
+
+// MigrateSchema create table schema in database
+func MigrateSchema(db *sql.DB) error {
+	_, err := db.ExecContext(context.TODO(), sqlCreateTableReview)
+	if err != nil {
+		return errors.Wrap(err, "migrate schema review")
+	}
+
+	_, err = db.ExecContext(context.TODO(), sqlCreateTableFoodDic)
+	if err != nil {
+		return errors.Wrap(err, "migrate schema food_dic")
+	}
+
+	return nil
 }
 
 // MigrateReview migrate schema table `review`
