@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	_mocks "github.com/koungkub/wongnai/internal/mocks"
+	_mocks "github.com/koungkub/wongnai-challenge/internal/mocks"
 	"github.com/stretchr/testify/assert"
 )
 

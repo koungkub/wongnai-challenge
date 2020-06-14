@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/koungkub/wongnai/internal/worker"
+	"github.com/koungkub/wongnai-challenge/internal/worker"
 )
 
 // Preview struct for encapsulate package worker

@@ -5,8 +5,8 @@ import (
 	"github.com/gofiber/recover"
 	"github.com/gofiber/requestid"
 	"github.com/gofiber/template/pug"
-	"github.com/koungkub/wongnai/internal/handler"
-	"github.com/koungkub/wongnai/internal/model"
+	"github.com/koungkub/wongnai-challenge/internal/handler"
+	"github.com/koungkub/wongnai-challenge/internal/model"
 )
 
 func routing(app *fiber.App) {

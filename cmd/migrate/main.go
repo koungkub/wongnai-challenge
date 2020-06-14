@@ -4,8 +4,8 @@ import (
 	"flag"
 	"strings"
 
-	"github.com/koungkub/wongnai/internal/connection"
-	"github.com/koungkub/wongnai/internal/worker"
+	"github.com/koungkub/wongnai-challenge/internal/connection"
+	"github.com/koungkub/wongnai-challenge/internal/worker"
 	"github.com/spf13/viper"
 
 	_ "github.com/go-sql-driver/mysql"

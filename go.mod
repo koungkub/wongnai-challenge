@@ -1,4 +1,4 @@
-module github.com/koungkub/wongnai
+module github.com/koungkub/wongnai-challenge
 
 go 1.14
 
@@ -8,7 +8,7 @@ require (
 	github.com/gofiber/fiber v1.11.1
 	github.com/gofiber/recover v0.1.0
 	github.com/gofiber/requestid v0.1.0
-	github.com/gofiber/template v1.4.1
+	github.com/gofiber/template v1.5.0
 	github.com/pkg/errors v0.9.1
 	github.com/sirupsen/logrus v1.6.0
 	github.com/spf13/viper v1.7.0
