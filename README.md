@@ -25,6 +25,8 @@ and open this browser [here](http://localhost:4567)
 docker-compose -f docker-compose.yml up -d
 ```
 
+and wait for 30 seconds for migrate data in databases before loadtest
+
 ## Testing
 
 ```sh
